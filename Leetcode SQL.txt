@@ -1,3 +1,74 @@
+LeetCode:
+
+
+
+
+Consecutive Numbers
+
+with consecutive_num as (
+select
+case when (lead (num, 1,’-1’) over (order by id) = num and
+lag(num,1,’-1’) over (order by id) = num)
+then num end as ConsecutiveNums
+from Logs)
+select distinct ConsecutiveNums from
+consecutive_num where ConsecutiveNums is not null
+
+Duplicate Emails
+with cte as (select email as Email,dense_rank() over (partition by email order by id) as rn from person) select distinct(Email) from cte where rn >=2;
+
+
+Department Highest Salary:
+with cte as (select d.name as Department , e.name as Employee,e.salary as Salary , dense_rank() over(partition by e.departmentId order by e.salary desc) as rn from employee e inner join department d on e.departmentId = d.id ) select Department,Employee,Salary from cte where rn = 1;
+
+Customers Who Never Order
+
+select c.name as Customers from customers c  where c.id not in(select customerId from orders);
+select c.name as Customers from customers c left join orders o on c.id = o.customerId where o.customerId is null;
+ select name as Customers from customers c where not exists (select * from orders o where o.customerId = c.id);
+
+Department Top Three Salaries
+
+with cte as (select d.name as Department , e.name as Employee , e.salary as Salary , dense_rank() over(partition by e.departmentId order by e.salary desc) as rn from employee e inner join department d on e.departmentId = d.id) select Department , Employee, Salary from cte where rn <= 3;
+
+Rising Temperature
+
+with cte as(select id ,temperature, lag(temperature,1) over(order by recordDate ) as nxtdaytemp ,lag(recordDate,1,recordDate) over (order by recordDate) as prev_date ,recordDate from weather ) select id from cte where nxtdaytemp < temperature and datediff(recordDate,prev_date) = 1 ;
+
+Delete Duplicate Emails:
+
+delete from person where id in (with cte as (select id,email,dense_rank() over (partition by email order by id) as rn from person) select id from cte where rn >= 2);
+
+
+
+Trips and Users 
+
+SELECT Request_at AS Day,
+ROUND(SUM(IF(Status != 'completed', 1, 0)) /COUNT(Status) ,2) AS 'Cancellation Rate'
+FROM Trips
+WHERE Request_at >= "2013-10-01" AND Request_at <= "2013-10-03"
+AND Client_Id NOT IN (SELECT Users_Id FROM Users WHERE Banned = "Yes")
+AND Driver_Id NOT IN (SELECT Users_Id FROM Users WHERE Banned = "Yes")
+GROUP BY Request_at
+
+SELECT Request_at AS Day, 
+round(sum(case when (status = "cancelled_by_driver" or status = "cancelled_by_client") then 1 else 0 end) / count(status),2) as 'Cancellation Rate'
+FROM Trips
+where Request_at between '2013-10-01' and '2013-10-03'
+and client_id not in (select users_id from users where banned = 'Yes')
+and driver_id not in (select users_id from users where banned = 'Yes')
+group by Request_at;
+
+
+SELECT Request_at AS Day, 
+round(sum(case when (status != "completed") then 1 else 0 end) / count(status),2) as 'Cancellation Rate'
+FROM Trips
+where Request_at between '2013-10-01' and '2013-10-03'
+and client_id not in (select users_id from users where banned = 'Yes')
+and driver_id not in (select users_id from users where banned = 'Yes')
+group by Request_at;
+
+
 Game Play Analysis I
 with cte as (select player_id ,min(event_date) as first_login from activity group by player_id)
 select * from cte;
