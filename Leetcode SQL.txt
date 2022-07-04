@@ -85,4 +85,5 @@ with cte as (select name ,population,area from world where area >= 3000000 or po
 Classes More Than 5 Students
 with cte as (select class , count(student) as cnt from courses group by class) select class from cte where cnt >=5;
 
-
+Human Traffic of Stadium:
+with cte as (select * , id - rank() over(order by id asc) as diff from stadium where people >= 100) ,cte2 as (select * ,count(*) over(partition by diff) as cnt from cte) select id,visit_date , people  from cte2 where cnt >=3;
