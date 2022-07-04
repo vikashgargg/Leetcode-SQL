@@ -1,0 +1,6 @@
+Game Play Analysis I
+with cte as (select player_id ,min(event_date) as first_login from activity group by player_id)
+select * from cte;
+
+Find Customer Referee:
+with cte as (select name from Customer where referee_id is null or referee_id != 2) select * from cte;
