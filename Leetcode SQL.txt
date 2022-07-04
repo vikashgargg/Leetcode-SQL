@@ -87,3 +87,7 @@ with cte as (select class , count(student) as cnt from courses group by class) s
 
 Human Traffic of Stadium:
 with cte as (select * , id - rank() over(order by id asc) as diff from stadium where people >= 100) ,cte2 as (select * ,count(*) over(partition by diff) as cnt from cte) select id,visit_date , people  from cte2 where cnt >=3;
+
+
+Sales Person:
+with cte as (select c.name as companyname  ,o.sales_id as order_sid from company c inner join orders o on c.com_id = o.com_id) , cte2 as (select s.name as name,ct.companyname as cname from salesperson s inner join cte ct on s.sales_id=ct.order_sid where ct.companyname ='RED') select name from salesperson where name not in (select name from cte2);
