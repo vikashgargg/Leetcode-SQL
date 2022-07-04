@@ -75,3 +75,6 @@ select * from cte;
 
 Find Customer Referee:
 with cte as (select name from Customer where referee_id is null or referee_id != 2) select * from cte;
+
+Customer Placing the Largest Number of Orders:
+with cte as (select customer_number,count(order_number) as cnt from orders group by customer_number) select customer_number from cte where cnt in (select max(cnt) from cte);
