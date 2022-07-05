@@ -101,3 +101,7 @@ from tree;
 
 Not Boring Movies
 select * from Cinema where mod(id,2) = 1 and description != 'boring' order by rating desc;
+
+Input Table PIVOT question
+
+with cte as (select case when age between 18 and 60 then '18-60' else '61+' end as age_group,  case when score=10 then 1 else 0 end as good, case when score=15 then 1 else 0 end as exceptional, score from input) select age_group,sum(good) as good,sum(exceptional) as exceptional  from cte group by age_group;
