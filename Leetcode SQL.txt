@@ -91,3 +91,10 @@ with cte as (select * , id - rank() over(order by id asc) as diff from stadium w
 
 Sales Person:
 with cte as (select c.name as companyname  ,o.sales_id as order_sid from company c inner join orders o on c.com_id = o.com_id) , cte2 as (select s.name as name,ct.companyname as cname from salesperson s inner join cte ct on s.sales_id=ct.order_sid where ct.companyname ='RED') select name from salesperson where name not in (select name from cte2);
+
+Tree Node:
+select id , case when p_id is null then 'Root'
+                 when id not in (select distinct(p_id) from tree where p_id is not null) then 'Leaf'
+                 else 'Inner'
+            end as Type
+from tree;
