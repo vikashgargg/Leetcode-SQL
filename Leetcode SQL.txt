@@ -105,6 +105,9 @@ select * from Cinema where mod(id,2) = 1 and description != 'boring' order by ra
 Exchange Seats:
 with cte as (select id ,student , lag(student,1,student) over (order by id) as prev_student,lead(student,1,student) over (order by id) as next_student from seat) select id , case when mod(id,2) = 0 then prev_student else next_student end as student from cte;
 
+Swap Salary:
+update salary set sex = case when sex='m' then 'f' else 'm' end
+update salary set sex = if (sex='m','f','m')
 
 
 Input Table PIVOT question
