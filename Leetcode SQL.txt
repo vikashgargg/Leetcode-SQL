@@ -102,6 +102,11 @@ from tree;
 Not Boring Movies
 select * from Cinema where mod(id,2) = 1 and description != 'boring' order by rating desc;
 
+Exchange Seats:
+with cte as (select id ,student , lag(student,1,student) over (order by id) as prev_student,lead(student,1,student) over (order by id) as next_student from seat) select id , case when mod(id,2) = 0 then prev_student else next_student end as student from cte;
+
+
+
 Input Table PIVOT question
 
 with cte as (select case when age between 18 and 60 then '18-60' else '61+' end as age_group,  case when score=10 then 1 else 0 end as good, case when score=15 then 1 else 0 end as exceptional, score from input) select age_group,sum(good) as good,sum(exceptional) as exceptional  from cte group by age_group;
