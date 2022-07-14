@@ -109,6 +109,10 @@ Swap Salary:
 update salary set sex = case when sex='m' then 'f' else 'm' end
 update salary set sex = if (sex='m','f','m')
 
+Actors and Directors Who Cooperated At Least Three Times:
+with cte as (select actor_id,director_id ,count(case when actor_id = director_id then 1 else 0 end ) as cnt from actordirector group by actor_id,director_id) select actor_id,director_id from cte where cnt >=3;
+
+
 
 Input Table PIVOT question
 
