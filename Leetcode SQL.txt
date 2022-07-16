@@ -126,6 +126,11 @@ where activity_date between
 group by activity_date;
 
 
+Article Views I
+select distinct author_id as id
+from Views
+where author_id = viewer_id
+order by id;
 
 
 Input Table PIVOT question
