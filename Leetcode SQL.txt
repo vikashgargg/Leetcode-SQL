@@ -112,6 +112,10 @@ update salary set sex = if (sex='m','f','m')
 Actors and Directors Who Cooperated At Least Three Times:
 with cte as (select actor_id,director_id ,count(case when actor_id = director_id then 1 else 0 end ) as cnt from actordirector group by actor_id,director_id) select actor_id,director_id from cte where cnt >=3;
 
+Sales Analysis III:
+with cte as (select p.product_id,p.product_name from product p inner join sales s on p.product_id=s.product_id group by p.product_id,p.product_name having min(s.sale_date) >= '2019-01-01'and max(s.sale_date) <= '2019-03-31') select * from cte;
+
+
 
 
 Input Table PIVOT question
