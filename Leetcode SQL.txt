@@ -138,6 +138,42 @@ count(o.order_date) as 'orders_in_2019' from users u left join orders o on u.use
 and year(o.order_date) ='2019'
 group by user_id
 
+Reformat Department Table:
+
+select id,
+sum(case when month = 'Jan' then revenue else Null end) as 'Jan_Revenue',
+sum(case when month = 'Feb' then revenue else Null end) as 'Feb_Revenue',
+sum(case when month = 'Mar' then revenue else Null end) as 'Mar_Revenue',
+sum(case when month = 'Apr' then revenue else Null end) as 'Apr_Revenue',
+sum(case when month = 'May' then revenue else Null end) as 'May_Revenue',
+sum(case when month = 'Jun' then revenue else Null end) as 'Jun_Revenue',
+sum(case when month = 'Jul' then revenue else Null end) as 'Jul_Revenue',
+sum(case when month = 'Aug' then revenue else Null end) as 'Aug_Revenue',
+sum(case when month = 'Sep' then revenue else Null end) as 'Sep_Revenue',
+sum(case when month = 'Oct' then revenue else Null end) as 'Oct_Revenue',
+sum(case when month = 'Nov' then revenue else Null end) as 'Nov_Revenue',
+sum(case when month = 'Dec' then revenue else Null end) as 'Dec_Revenue'
+from department
+group by id;
+
+another approach:
+
+select id,
+SUM(IF(month='Jan',revenue,NULL))AS 'Jan_Revenue',
+SUM(IF(month='Feb',revenue,NULL))AS 'Feb_Revenue',
+SUM(IF(month='Mar',revenue,NULL))AS 'Mar_Revenue',
+SUM(IF(month='Apr',revenue,NULL))AS 'Apr_Revenue',
+SUM(IF(month='May',revenue,NULL))AS 'May_Revenue',
+SUM(IF(month='Jun',revenue,NULL))AS 'Jun_Revenue',
+SUM(IF(month='Jul',revenue,NULL))AS 'Jul_Revenue',
+SUM(IF(month='Aug',revenue,NULL))AS 'Aug_Revenue',
+SUM(IF(month='Sep',revenue,NULL))AS 'Sep_Revenue',
+SUM(IF(month='Oct',revenue,NULL))AS 'Oct_Revenue',
+SUM(IF(month='Nov',revenue,NULL))AS 'Nov_Revenue',
+SUM(IF(month='Dec',revenue,NULL))AS 'Dec_Revenue'
+from Department
+group by id
+
 Input Table PIVOT question
 
 with cte as (select case when age between 18 and 60 then '18-60' else '61+' end as age_group,  case when score=10 then 1 else 0 end as good, case when score=15 then 1 else 0 end as exceptional, score from input) select age_group,sum(good) as good,sum(exceptional) as exceptional  from cte group by age_group;
