@@ -132,6 +132,14 @@ from Views
 where author_id = viewer_id
 order by id;
 
+Market Analysis I:
+SELECT U.USER_ID AS 'buyer_id', 
+U.JOIN_DATE AS 'join_date',
+COUNT(O.ORDER_DATE) AS 'orders_in_2019'
+FROM USERS U LEFT JOIN ORDERS O
+ON U.USER_ID = O.BUYER_ID 
+AND YEAR(O.order_date) = '2019'
+GROUP BY U.USER_ID
 
 Input Table PIVOT question
 
