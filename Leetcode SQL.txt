@@ -174,6 +174,98 @@ SUM(IF(month='Dec',revenue,NULL))AS 'Dec_Revenue'
 from Department
 group by id
 
+
+
+
+
+
+mysql> CREATE TABLE events (
+    -> ID int,
+    -> event varchar(255),
+    -> YEAR INt,
+    -> GOLD varchar(255),
+    -> SILVER varchar(255),
+    -> BRONZE varchar(255)
+    -> );
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> INSERT INTO events VALUES (1,'100m',2016, 'Amthhew Mcgarray','donald','barbara');
+INSERT INTO events VALUES (2,'200m',2016, 'Nichole','Alvaro Eaton','janet Smith');
+INSERT INTO events VALUES (3,'500m',2016, 'Charles','Nichole','Susana');
+INSERT INTO events VALUES (4,'100m',2016, 'Ronald','maria','paula');
+INSERT INTO events VALUES (5,'200m',2016, 'Alfred','carol','Steven');
+INSERT INTO events VALUES (6,'500m',2016, 'Nichole','Alfred','Brandon');
+INSERT INTO events VALUES (7,'100m',2016, 'Charles','Dennis','Susana');
+INSERT INTO events VALUES (8,'200m',2016, 'Thomas','Dawn','catherine');
+INSERT INTO events VALUES (9,'500m',2016, 'Thomas','Dennis','paula');
+INSERT INTO events VALUES (10,'100m',2016, 'Charles','Dennis','Susana');
+INSERT INTO events VALUES (11,'200m',2016, 'jessica','Donald','Stefeney');
+INSERT INTO events VALUES (12,'500m',2016,'Thomas','Steven','Catherine');Query OK, 1 row affected (0.01 sec)
+
+mysql> INSERT INTO events VALUES (2,'200m',2016, 'Nichole','Alvaro Eaton','janet Smith');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO events VALUES (3,'500m',2016, 'Charles','Nichole','Susana');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO events VALUES (4,'100m',2016, 'Ronald','maria','paula');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO events VALUES (5,'200m',2016, 'Alfred','carol','Steven');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO events VALUES (6,'500m',2016, 'Nichole','Alfred','Brandon');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO events VALUES (7,'100m',2016, 'Charles','Dennis','Susana');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO events VALUES (8,'200m',2016, 'Thomas','Dawn','catherine');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO events VALUES (9,'500m',2016, 'Thomas','Dennis','paula');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO events VALUES (10,'100m',2016, 'Charles','Dennis','Susana');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO events VALUES (11,'200m',2016, 'jessica','Donald','Stefeney');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> INSERT INTO events VALUES (12,'500m',2016,'Thomas','Steven','Catherine');
+Query OK, 1 row affected (0.01 sec)
+
+mysql> select * from events;
++------+-------+------+------------------+--------------+-------------+
+| ID   | event | YEAR | GOLD             | SILVER       | BRONZE      |
++------+-------+------+------------------+--------------+-------------+
+|    1 | 100m  | 2016 | Amthhew Mcgarray | donald       | barbara     |
+|    2 | 200m  | 2016 | Nichole          | Alvaro Eaton | janet Smith |
+|    3 | 500m  | 2016 | Charles          | Nichole      | Susana      |
+|    4 | 100m  | 2016 | Ronald           | maria        | paula       |
+|    5 | 200m  | 2016 | Alfred           | carol        | Steven      |
+|    6 | 500m  | 2016 | Nichole          | Alfred       | Brandon     |
+|    7 | 100m  | 2016 | Charles          | Dennis       | Susana      |
+|    8 | 200m  | 2016 | Thomas           | Dawn         | catherine   |
+|    9 | 500m  | 2016 | Thomas           | Dennis       | paula       |
+|   10 | 100m  | 2016 | Charles          | Dennis       | Susana      |
+|   11 | 200m  | 2016 | jessica          | Donald       | Stefeney    |
+|   12 | 500m  | 2016 | Thomas           | Steven       | Catherine   |
++------+-------+------+------------------+--------------+-------------+
+12 rows in set (0.00 sec)
+
+mysql> select gold as player_name , count(gold) as no_of_gold from events where gold not in( select silver from events union all select bronze from events ) group by gold;
++------------------+------------+
+| player_name      | no_of_gold |
++------------------+------------+
+| Amthhew Mcgarray |          1 |
+| Charles          |          3 |
+| Ronald           |          1 |
+| Thomas           |          3 |
+| jessica          |          1 |
++------------------+------------+
+5 rows in set (0.01 sec)
+
 Input Table PIVOT question
 
 with cte as (select case when age between 18 and 60 then '18-60' else '61+' end as age_group,  case when score=10 then 1 else 0 end as good, case when score=15 then 1 else 0 end as exceptional, score from input) select age_group,sum(good) as good,sum(exceptional) as exceptional  from cte group by age_group;
