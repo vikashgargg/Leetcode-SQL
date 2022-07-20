@@ -185,9 +185,13 @@ group by stock_name) select * from cte;
 Top Travellers:
 with cte as (select u.name as name ,sum(r.distance) as travelled_distance from users u left join rides r on u.id=r.user_id group by u.id order by sum(r.distance) desc , name asc ) select name ,COALESCE(travelled_distance,0) as travelled_distance from cte;
 
-
-
-
+Group Sold Products By The Date:
+SELECT sell_date,
+		COUNT(DISTINCT(product)) AS num_sold, 
+		GROUP_CONCAT(DISTINCT product ORDER BY product ASC) AS products
+FROM Activities
+GROUP BY sell_date
+ORDER BY sell_date ASC
 
 
 
