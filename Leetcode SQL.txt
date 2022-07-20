@@ -193,6 +193,9 @@ FROM Activities
 GROUP BY sell_date
 ORDER BY sell_date ASC
 
+Patients With a Condition:
+select * from patients where conditions like 'DIAB1%' or conditions like '% DIAB1%';
+
 
 
 
