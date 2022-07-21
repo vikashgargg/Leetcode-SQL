@@ -221,6 +221,17 @@ select event_day as day , emp_id,sum(out_time) - sum(in_time) as total_time from
 Recyclable and Low Fat Products:
 select product_id from products where low_fats = 'Y' and recyclable =  'Y';
 
+Rearrange Products Table:
+SELECT * FROM 
+(
+      SELECT product_id, 'store1' store, store1 price from Products
+	  UNION
+	  SELECT product_id, 'store2' store, store2 price from Products
+	  UNION
+	  SELECT product_id, 'store3' store, store3 price from Products
+) a
+WHERE price is not null;
+
 
 
 
