@@ -215,6 +215,11 @@ Find Followers Count:
 select user_id ,count(follower_id) as followers_count from followers group by user_id order by user_id;
 
 
+Find Total Time Spent by Each Employee:
+select event_day as day , emp_id,sum(out_time) - sum(in_time) as total_time from employees group by event_day,emp_id;
+
+
+
 
 
 
