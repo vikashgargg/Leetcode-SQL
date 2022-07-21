@@ -211,6 +211,11 @@ select user_id , concat(upper(substring(name,1,1)),lower(substring(name,2))) as 
 Daily Leads and Partners:
 select date_id,make_name ,count(distinct(lead_id)) as unique_leads,count(distinct(partner_id)) as unique_partners from dailysales group by date_id,make_name;
 
+Find Followers Count:
+select user_id ,count(follower_id) as followers_count from followers group by user_id order by user_id;
+
+
+
 
 
 mysql> CREATE TABLE events (
