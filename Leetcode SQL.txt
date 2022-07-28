@@ -238,7 +238,18 @@ select employee_id , case when mod(employee_id,2) !=0  and name not like 'M%' th
 
 The Latest Login in 2020:
 select user_id,max(time_stamp) as last_stamp from logins where year(time_stamp) ='2020' group by user_id;
-select user_id,max(time_stamp) as last_stamp from logins where year(time_stamp) like '2020%' group by user_id
+select user_id,max(time_stamp) as last_stamp from logins where year(time_stamp) like '2020%' group by user_id;
+
+
+Employees With Missing Information:
+select employee_id from employees where employee_id not in (select employee_id from salaries) union select employee_id from salaries where employee_id not in (select employee_id from employees)
+order by employee_id;
+
+SELECT ISNULL(s.employee_id, e.employee_id) AS employee_id  FROM Employees e
+    FULL OUTER JOIN Salaries s ON s.employee_id = e.employee_id
+    WHERE s.employee_id IS NULL OR e.employee_id IS NULL
+    ORDER BY employee_id ASC;
+
 
 
 
