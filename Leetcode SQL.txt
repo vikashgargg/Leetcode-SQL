@@ -249,8 +249,12 @@ SELECT ISNULL(s.employee_id, e.employee_id) AS employee_id  FROM Employees e
     FULL OUTER JOIN Salaries s ON s.employee_id = e.employee_id
     WHERE s.employee_id IS NULL OR e.employee_id IS NULL
     ORDER BY employee_id ASC;
-
-
+    
+    
+    
+    
+Combine Two Tables:
+select p.firstName as firstName , p.lastName as lastName , a.city as city , a.state as state from person p left join address a on p.personId = a.personId;
 
 
 
