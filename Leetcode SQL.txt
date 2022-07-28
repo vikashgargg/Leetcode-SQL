@@ -236,6 +236,11 @@ Calculate Special Bonus:
 select employee_id , case when mod(employee_id,2) !=0  and name not like 'M%' then salary else 0 end as bonus from employees order by employee_id;
 
 
+The Latest Login in 2020:
+select user_id,max(time_stamp) as last_stamp from logins where year(time_stamp) ='2020' group by user_id;
+select user_id,max(time_stamp) as last_stamp from logins where year(time_stamp) like '2020%' group by user_id
+
+
 
 
 mysql> CREATE TABLE events (
