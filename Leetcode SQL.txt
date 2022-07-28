@@ -31,6 +31,7 @@ Department Top Three Salaries
 
 with cte as (select d.name as Department , e.name as Employee , e.salary as Salary , dense_rank() over(partition by e.departmentId order by e.salary desc) as rn from employee e inner join department d on e.departmentId = d.id) select Department , Employee, Salary from cte where rn <= 3;
 
+
 Rising Temperature
 
 with cte as(select id ,temperature, lag(temperature,1) over(order by recordDate ) as nxtdaytemp ,lag(recordDate,1,recordDate) over (order by recordDate) as prev_date ,recordDate from weather ) select id from cte where nxtdaytemp < temperature and datediff(recordDate,prev_date) = 1 ;
