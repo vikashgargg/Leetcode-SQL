@@ -32,3 +32,8 @@ from company c , lead_manager l , senior_manager s ,manager m , employee e
         and m.manager_code = e.manager_code
         group by c.company_code,c.founder
         order by c.company_code
+        
+        
+        
+ Weather Observation Station 20:     
+ select round(s.lat_n, 4) from station as s where ( (select count(lat_n) from station where s.lat_n >= lat_n) - (select count(lat_n) % 2 from station) = (select count(lat_n) from station where s.lat_n < lat_n) )
