@@ -37,3 +37,33 @@ from company c , lead_manager l , senior_manager s ,manager m , employee e
         
  Weather Observation Station 20:     
  select round(s.lat_n, 4) from station as s where ( (select count(lat_n) from station where s.lat_n >= lat_n) - (select count(lat_n) % 2 from station) = (select count(lat_n) from station where s.lat_n < lat_n) )
+
+
+SQL Project Planning :
+
+SET sql_mode = '';
+select start_date , end_date from 
+            (select start_date from projects where start_date not in 
+                    (select end_date from projects)) a ,
+            (select end_date from projects where end_date not in 
+                    (select start_date from projects)) b
+                        where start_date < end_date
+                        group by start_date
+                        order by datediff(end_date,start_date),start_date
+                        
+Contest Leaderboard:                       
+select h.hacker_id, name, sum(score) as total_score
+from
+hackers as h inner join
+/* find max_score*/
+(select hacker_id,  max(score) as score from submissions group by challenge_id, hacker_id) max_score
+
+on h.hacker_id=max_score.hacker_id
+group by h.hacker_id, name
+
+/* don't accept hackers with total_score=0 */
+having total_score > 0
+
+/* finally order as required */
+order by total_score desc, h.hacker_id
+;
