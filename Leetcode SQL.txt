@@ -349,3 +349,21 @@ mysql> select gold as player_name , count(gold) as no_of_gold from events where 
 Input Table PIVOT question
 
 with cte as (select case when age between 18 and 60 then '18-60' else '61+' end as age_group,  case when score=10 then 1 else 0 end as good, case when score=15 then 1 else 0 end as exceptional, score from input) select age_group,sum(good) as good,sum(exceptional) as exceptional  from cte group by age_group;
+
+
+
+Microsoft Question select all salary < 70000(budget)
+mysql> with cte as (select experience , salary , sum(salary) over (partition by experience order by salary ) as new_sal from candidates) , senior as (select * from cte where experience ='Senior' and new_sal <= 70000) ,output as (s
+elect * from cte where experience = 'Junior' and new_sal <=(select sum(salary) from senior) union all select * from
+ senior ) select * from output
+    -> ;
++------------+--------+---------+
+| experience | salary | new_sal |
++------------+--------+---------+
+| Junior     |  10000 |   10000 |
+| Junior     |  15000 |   25000 |
+| Senior     |  16000 |   16000 |
+| Senior     |  20000 |   36000 |
++------------+--------+---------+
+4 rows in set (0.01 sec)
+
