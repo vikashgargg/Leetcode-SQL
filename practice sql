@@ -1,0 +1,662 @@
+
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> create table candidates (
+    -> emp_id int,
+    -> experience varchar(20),
+    -> salary int
+    -> );
+ERROR 1046 (3D000): No database selected
+mysql> use vikash;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql> create table candidates ( emp_id int, experience varchar(20), salary int
+);
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> insert into candidates values
+    -> (1,'Junior',10000),(2,'Junior',15000),(3,'Junior',40000),(4,'Senior',16000),(5,'Senior',20000),(6,'Senior',50000);
+Query OK, 6 rows affected (0.01 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> select * from candidates;
++--------+------------+--------+
+| emp_id | experience | salary |
++--------+------------+--------+
+|      1 | Junior     |  10000 |
+|      2 | Junior     |  15000 |
+|      3 | Junior     |  40000 |
+|      4 | Senior     |  16000 |
+|      5 | Senior     |  20000 |
+|      6 | Senior     |  50000 |
++--------+------------+--------+
+6 rows in set (0.00 sec)
+
+mysql> with cte as (select experience , salary , sum(salary) over (partition by experience order by salary ) as new_sal from candidates) select * from cte;
++------------+--------+---------+
+| experience | salary | new_sal |
++------------+--------+---------+
+| Junior     |  10000 |   10000 |
+| Junior     |  15000 |   25000 |
+| Junior     |  40000 |   65000 |
+| Senior     |  16000 |   16000 |
+| Senior     |  20000 |   36000 |
+| Senior     |  50000 |   86000 |
++------------+--------+---------+
+6 rows in set (0.01 sec)
+
+mysql> with cte as (select experience , salary , sum(salary) over (partition by experience order by salary ) as new_sal from candidates) , cte1 as (select * from cte where new_sal < 70000) select * from cte1;
++------------+--------+---------+
+| experience | salary | new_sal |
++------------+--------+---------+
+| Junior     |  10000 |   10000 |
+| Junior     |  15000 |   25000 |
+| Junior     |  40000 |   65000 |
+| Senior     |  16000 |   16000 |
+| Senior     |  20000 |   36000 |
++------------+--------+---------+
+5 rows in set (0.01 sec)
+
+mysql> with cte as (select experience , salary , sum(salary) over (partition by experience order by salary ) as new_sal from candidates) , cte1 as (select * from cte where experience ='Senior' and new_sal < 70000) select * from ct
+e1;
++------------+--------+---------+
+| experience | salary | new_sal |
++------------+--------+---------+
+| Senior     |  16000 |   16000 |
+| Senior     |  20000 |   36000 |
++------------+--------+---------+
+2 rows in set (0.01 sec)
+
+mysql> with cte as (select experience , salary , sum(salary) over (partition by experience order by salary ) as new_sal from candidates) , senior as (select * from cte where experience ='Senior' and new_sal <= 70000) ,output as (s
+elect * from cte where experience = 'Junior' and new_sal <=(select sum(salary) from senior) union all select * from
+ senior ) select * from output
+    -> ;
++------------+--------+---------+
+| experience | salary | new_sal |
++------------+--------+---------+
+| Junior     |  10000 |   10000 |
+| Junior     |  15000 |   25000 |
+| Senior     |  16000 |   16000 |
+| Senior     |  20000 |   36000 |
++------------+--------+---------+
+4 rows in set (0.01 sec)
+
+mysql> exit;
+Bye
+❯ mysql -u root -p
+Enter password:
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 10
+Server version: 8.0.29 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2022, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> create table numbers(num int );
+ERROR 1046 (3D000): No database selected
+mysql> use vikash;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql> create table numbers(num int );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> insert into numbers values(8),(8);
+Query OK, 2 rows affected (0.01 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> select * from numbers;
++------+
+| num  |
++------+
+|    8 |
+|    8 |
++------+
+2 rows in set (0.00 sec)
+
+mysql> insert into numbers values(8),(8);
+Query OK, 2 rows affected (0.00 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> insert into numbers values(2),(1);
+Query OK, 2 rows affected (0.00 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> insert into numbers values(3),(3);
+Query OK, 2 rows affected (0.01 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> insert into numbers values(3),(4);
+Query OK, 2 rows affected (0.00 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> select * from numbers;
++------+
+| num  |
++------+
+|    8 |
+|    8 |
+|    8 |
+|    8 |
+|    2 |
+|    1 |
+|    3 |
+|    3 |
+|    3 |
+|    4 |
++------+
+10 rows in set (0.00 sec)
+
+mysql> select nums,dense_rank() over(partition by num order by num ) rn ,dense_rank() over(partition by num order by num ) rnk from numbers;
+ERROR 1054 (42S22): Unknown column 'nums' in 'field list'
+mysql> select num,dense_rank() over(partition by num order by num ) rn ,dense_rank() over(partition by num order by num ) rnk from numbers;
++------+----+-----+
+| num  | rn | rnk |
++------+----+-----+
+|    1 |  1 |   1 |
+|    2 |  1 |   1 |
+|    3 |  1 |   1 |
+|    3 |  1 |   1 |
+|    3 |  1 |   1 |
+|    4 |  1 |   1 |
+|    8 |  1 |   1 |
+|    8 |  1 |   1 |
+|    8 |  1 |   1 |
+|    8 |  1 |   1 |
++------+----+-----+
+10 rows in set (0.00 sec)
+
+mysql> select num,dense_rank() over(partition by num order by num ) rn ,dense_rank() over(partition by num order by num ) rnk from numbers;
++------+----+-----+
+| num  | rn | rnk |
++------+----+-----+
+|    1 |  1 |   1 |
+|    2 |  1 |   1 |
+|    3 |  1 |   1 |
+|    3 |  1 |   1 |
+|    3 |  1 |   1 |
+|    4 |  1 |   1 |
+|    8 |  1 |   1 |
+|    8 |  1 |   1 |
+|    8 |  1 |   1 |
+|    8 |  1 |   1 |
++------+----+-----+
+10 rows in set (0.00 sec)
+
+mysql> select num,dense_rank() over(partition by num order by num ) rn ,dense_rank() over(partition by num order by num ) rnk from numbers
+    ->
+    ->
+    -> ;
++------+----+-----+
+| num  | rn | rnk |
++------+----+-----+
+|    1 |  1 |   1 |
+|    2 |  1 |   1 |
+|    3 |  1 |   1 |
+|    3 |  1 |   1 |
+|    3 |  1 |   1 |
+|    4 |  1 |   1 |
+|    8 |  1 |   1 |
+|    8 |  1 |   1 |
+|    8 |  1 |   1 |
+|    8 |  1 |   1 |
++------+----+-----+
+10 rows in set (0.01 sec)
+
+mysql> select num,dense_rank() over(partition by num order by num ) rn ,dense_rank() over(partition by num order by num ) drn ,dense_rank() over(partition by num order by num ) rno ,count(num)  over(partition by num order by num )
+ cnt from numbers
+    -> ;
++------+----+-----+-----+-----+
+| num  | rn | drn | rno | cnt |
++------+----+-----+-----+-----+
+|    1 |  1 |   1 |   1 |   1 |
+|    2 |  1 |   1 |   1 |   1 |
+|    3 |  1 |   1 |   1 |   3 |
+|    3 |  1 |   1 |   1 |   3 |
+|    3 |  1 |   1 |   1 |   3 |
+|    4 |  1 |   1 |   1 |   1 |
+|    8 |  1 |   1 |   1 |   4 |
+|    8 |  1 |   1 |   1 |   4 |
+|    8 |  1 |   1 |   1 |   4 |
+|    8 |  1 |   1 |   1 |   4 |
++------+----+-----+-----+-----+
+10 rows in set (0.01 sec)
+
+mysql> select num,dense_rank() over(partition by num order by num desc) rn ,dense_rank() over(partition by num orde
+r by num desc) drn ,dense_rank() over(partition by num order by num desc) rno ,count(num) over(partition by num ord
+er by num desc ) cnt from numbers;
++------+----+-----+-----+-----+
+| num  | rn | drn | rno | cnt |
++------+----+-----+-----+-----+
+|    1 |  1 |   1 |   1 |   1 |
+|    2 |  1 |   1 |   1 |   1 |
+|    3 |  1 |   1 |   1 |   3 |
+|    3 |  1 |   1 |   1 |   3 |
+|    3 |  1 |   1 |   1 |   3 |
+|    4 |  1 |   1 |   1 |   1 |
+|    8 |  1 |   1 |   1 |   4 |
+|    8 |  1 |   1 |   1 |   4 |
+|    8 |  1 |   1 |   1 |   4 |
+|    8 |  1 |   1 |   1 |   4 |
++------+----+-----+-----+-----+
+10 rows in set (0.00 sec)
+
+mysql> select num,dense_rank() over(partition by num order by num desc) rn ,dense_rank() over(partition by num order by num desc) drn ,row_number() over(partition by num order by num desc) rno ,count(num) over(partition by num ord
+er by num desc ) cnt from numbers;
++------+----+-----+-----+-----+
+| num  | rn | drn | rno | cnt |
++------+----+-----+-----+-----+
+|    1 |  1 |   1 |   1 |   1 |
+|    2 |  1 |   1 |   1 |   1 |
+|    3 |  1 |   1 |   1 |   3 |
+|    3 |  1 |   1 |   2 |   3 |
+|    3 |  1 |   1 |   3 |   3 |
+|    4 |  1 |   1 |   1 |   1 |
+|    8 |  1 |   1 |   1 |   4 |
+|    8 |  1 |   1 |   2 |   4 |
+|    8 |  1 |   1 |   3 |   4 |
+|    8 |  1 |   1 |   4 |   4 |
++------+----+-----+-----+-----+
+10 rows in set (0.00 sec)
+
+mysql> with cte as (select num,dense_rank() over(partition by num order by num desc) rn ,dense_rank() over(partitio
+n by num order by num desc) drn ,row_number() over(partition by num order by num desc) rno ,count(num) over(partiti
+on by num order by num desc ) cnt from numbers) select num from cte where cnt =1;
++------+
+| num  |
++------+
+|    1 |
+|    2 |
+|    4 |
++------+
+3 rows in set (0.01 sec)
+
+mysql> with cte as (select num,dense_rank() over(partition by num order by num desc) rn ,dense_rank() over(partition by num order by num desc) drn ,row_number() over(partition by num order by num desc) rno ,count(num) over(partition by num order by num desc ) cnt from numbers) select num from cte where cnt !=1;
++------+
+| num  |
++------+
+|    3 |
+|    3 |
+|    3 |
+|    8 |
+|    8 |
+|    8 |
+|    8 |
++------+
+7 rows in set (0.00 sec)
+
+mysql> with cte as (select num,dense_rank() over(partition by num order by num desc) rn ,dense_rank() over(partition by num order by num desc) drn ,row_number() over(partition by num order by num desc) rno ,count(num) over(partition by num order by num desc ) cnt from numbers) select num from cte where rno = 1;
++------+
+| num  |
++------+
+|    1 |
+|    2 |
+|    3 |
+|    4 |
+|    8 |
++------+
+5 rows in set (0.00 sec)
+
+mysql> with cte as (select num,dense_rank() over(partition by num order by num desc) rn ,dense_rank() over(partition by num order by num desc) drn ,row_number() over(partition by num order by num desc) rno ,count(num) over(partition by num order by num desc ) cnt from numbers) select num from cte where rno > 1;
++------+
+| num  |
++------+
+|    3 |
+|    3 |
+|    8 |
+|    8 |
+|    8 |
++------+
+5 rows in set (0.00 sec)
+
+mysql> with cte as (select num,dense_rank() over(partition by num order by num desc) rn ,dense_rank() over(partition by num order by num desc) drn ,row_number() over(partition by num order by num desc) rno ,count(num) over(partition by num order by num desc ) cnt from numbers) select num from cte where rno >= 1;
++------+
+| num  |
++------+
+|    1 |
+|    2 |
+|    3 |
+|    3 |
+|    3 |
+|    4 |
+|    8 |
+|    8 |
+|    8 |
+|    8 |
++------+
+10 rows in set (0.00 sec)
+
+mysql> with cte as (select num,dense_rank() over(partition by num order by num desc) rn ,dense_rank() over(partition by num order by num desc) drn ,row_number() over(partition by num order by num desc) rno ,count(num) over(partition by num order by num desc ) cnt from numbers) select num from cte where rno > 1;
++------+
+| num  |
++------+
+|    3 |
+|    3 |
+|    8 |
+|    8 |
+|    8 |
++------+
+5 rows in set (0.01 sec)
+
+mysql> select * from numbers;
++------+
+| num  |
++------+
+|    8 |
+|    8 |
+|    8 |
+|    8 |
+|    2 |
+|    1 |
+|    3 |
+|    3 |
+|    3 |
+|    4 |
++------+
+10 rows in set (0.00 sec)
+
+mysql> with cte as (select num,count(num) over(partition by num order by num desc) as cnt from numbers) select * from cte;
++------+-----+
+| num  | cnt |
++------+-----+
+|    1 |   1 |
+|    2 |   1 |
+|    3 |   3 |
+|    3 |   3 |
+|    3 |   3 |
+|    4 |   1 |
+|    8 |   4 |
+|    8 |   4 |
+|    8 |   4 |
+|    8 |   4 |
++------+-----+
+10 rows in set (0.00 sec)
+
+mysql> with cte as (select num,count(num) over(partition by num order by num desc) as cnt from numbers) select * from cte where num =1 limit 1;
++------+-----+
+| num  | cnt |
++------+-----+
+|    1 |   1 |
++------+-----+
+1 row in set (0.00 sec)
+
+mysql> with cte as (select num,count(num) over(partition by num order by num) as cnt from numbers) select * from cte where num =1 limit 1;
++------+-----+
+| num  | cnt |
++------+-----+
+|    1 |   1 |
++------+-----+
+1 row in set (0.01 sec)
+
+mysql> alter table numbers add name varchar(25);
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> select * from numbers;
++------+------+
+| num  | name |
++------+------+
+|    8 | NULL |
+|    8 | NULL |
+|    8 | NULL |
+|    8 | NULL |
+|    2 | NULL |
+|    1 | NULL |
+|    3 | NULL |
+|    3 | NULL |
+|    3 | NULL |
+|    4 | NULL |
++------+------+
+10 rows in set (0.00 sec)
+
+mysql> update numbers set name = 'a' where num =2;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from numbers;
++------+------+
+| num  | name |
++------+------+
+|    8 | NULL |
+|    8 | NULL |
+|    8 | NULL |
+|    8 | NULL |
+|    2 | a    |
+|    1 | NULL |
+|    3 | NULL |
+|    3 | NULL |
+|    3 | NULL |
+|    4 | NULL |
++------+------+
+10 rows in set (0.00 sec)
+
+mysql> update numbers set name = 'c' where num =3;
+Query OK, 3 rows affected (0.00 sec)
+Rows matched: 3  Changed: 3  Warnings: 0
+
+mysql> update numbers set name = 's' where num =1;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from numbers;
++------+------+
+| num  | name |
++------+------+
+|    8 | NULL |
+|    8 | NULL |
+|    8 | NULL |
+|    8 | NULL |
+|    2 | a    |
+|    1 | s    |
+|    3 | c    |
+|    3 | c    |
+|    3 | c    |
+|    4 | NULL |
++------+------+
+10 rows in set (0.00 sec)
+
+mysql> update numbers set name = 'p' where num =4;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> update numbers set name = 'l' where num =8;
+Query OK, 4 rows affected (0.00 sec)
+Rows matched: 4  Changed: 4  Warnings: 0
+
+mysql> select * from numbers;
++------+------+
+| num  | name |
++------+------+
+|    8 | l    |
+|    8 | l    |
+|    8 | l    |
+|    8 | l    |
+|    2 | a    |
+|    1 | s    |
+|    3 | c    |
+|    3 | c    |
+|    3 | c    |
+|    4 | p    |
++------+------+
+10 rows in set (0.00 sec)
+
+mysql> with cte as (select num,count(num) over(partition by num order by num desc) as cnt from numbers) select * from cte where num =1 limit 1;
++------+-----+
+| num  | cnt |
++------+-----+
+|    1 |   1 |
++------+-----+
+1 row in set (0.00 sec)
+
+mysql> with cte as (select num,count(num) over(partition by num order by name desc) as cnt from numbers) select * from cte where num =1 limit 1;
++------+-----+
+| num  | cnt |
++------+-----+
+|    1 |   1 |
++------+-----+
+1 row in set (0.00 sec)
+
+mysql> with cte as (select num,count(num) over(partition by num order by name) as cnt from numbers) select * from cte where num =1 limit 1;
++------+-----+
+| num  | cnt |
++------+-----+
+|    1 |   1 |
++------+-----+
+1 row in set (0.00 sec)
+
+mysql> with cte as (select num ,count(num) from numbers group by num order by num having count(num) =1 limit 1) select * from cte;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'having count(num) =1 limit 1) select * from cte' at line 1
+mysql> with cte as (select num ,count(num) from numbers group by num order by num having count(num) = 1) select * from cte;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'having count(num) = 1) select * from cte' at line 1
+mysql> with cte as (select num ,count(num) from numbers group by num order by num desc ) select * from cte;
++------+------------+
+| num  | count(num) |
++------+------------+
+|    8 |          4 |
+|    4 |          1 |
+|    3 |          3 |
+|    2 |          1 |
+|    1 |          1 |
++------+------------+
+5 rows in set (0.00 sec)
+
+mysql> with cte as (select num ,count(num) from numbers group by num order by num desc having count(num) =1) select
+ * from cte;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'having count(num) =1) select * from cte' at line 1
+mysql> with cte as (select num ,count(num) from numbers group by num having count(num) =1 order by num desc) select
+ * from cte;
++------+------------+
+| num  | count(num) |
++------+------------+
+|    4 |          1 |
+|    2 |          1 |
+|    1 |          1 |
++------+------------+
+3 rows in set (0.00 sec)
+
+mysql> with cte as (select num ,count(num) from numbers group by num having count(num) =1 order by num desc limit 1) select * from cte;
++------+------------+
+| num  | count(num) |
++------+------------+
+|    4 |          1 |
++------+------------+
+1 row in set (0.00 sec)
+
+mysql> create table a (id int , name varchar);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')' at line 1
+mysql> create table a (id int , name varchar(25));
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> create table b (id int ,mid int, name varchar(25));
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> insert into a values (1,'vikash'),(2,'ram'),(3,'shyam'),(4,'raghu'),(5,'hello');
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> select * from a;
++------+--------+
+| id   | name   |
++------+--------+
+|    1 | vikash |
+|    2 | ram    |
+|    3 | shyam  |
+|    4 | raghu  |
+|    5 | hello  |
++------+--------+
+5 rows in set (0.00 sec)
+
+mysql> insert into b values (1,2,'vikash'),(2,2,'ram'),(3,NULL,'shyam'),(4,3,'raghu'),(5,NULL,'hello');
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> select * from b;
++------+------+--------+
+| id   | mid  | name   |
++------+------+--------+
+|    1 |    2 | vikash |
+|    2 |    2 | ram    |
+|    3 | NULL | shyam  |
+|    4 |    3 | raghu  |
+|    5 | NULL | hello  |
++------+------+--------+
+5 rows in set (0.00 sec)
+
+mysql> select * from a where id not in (select mid from b);
+Empty set (0.00 sec)
+
+mysql> create table c (id int ,mid int, name varchar(25));
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> insert into b values (1,2,'vikashc'),(2,2,'ramc'),(3,8,'shyamc'),(4,3,'raghuc'),(5,10,'helloc');
+Query OK, 5 rows affected (0.00 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> select * from a where id not in (select mid from c);
++------+--------+
+| id   | name   |
++------+--------+
+|    1 | vikash |
+|    2 | ram    |
+|    3 | shyam  |
+|    4 | raghu  |
+|    5 | hello  |
++------+--------+
+5 rows in set (0.00 sec)
+
+mysql> select * from c;
+Empty set (0.00 sec)
+
+mysql> insert into c values (1,2,'vikashc'),(2,2,'ramc'),(3,8,'shyamc'),(4,3,'raghuc'),(5,10,'helloc');
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> select * from a where id not in (select mid from c);
++------+--------+
+| id   | name   |
++------+--------+
+|    1 | vikash |
+|    4 | raghu  |
+|    5 | hello  |
++------+--------+
+3 rows in set (0.00 sec)
+
+mysql> insert into c values (6,NULL,'vikashc');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> select * from c;
++------+------+---------+
+| id   | mid  | name    |
++------+------+---------+
+|    1 |    2 | vikashc |
+|    2 |    2 | ramc    |
+|    3 |    8 | shyamc  |
+|    4 |    3 | raghuc  |
+|    5 |   10 | helloc  |
+|    6 | NULL | vikashc |
++------+------+---------+
+6 rows in set (0.00 sec)
+
+mysql> select * from a where id not in (select mid from c);
+Empty set (0.00 sec)
+
+mysql> select * from a where id not in (select mid from c where mid is not null);
++------+--------+
+| id   | name   |
++------+--------+
+|    1 | vikash |
+|    4 | raghu  |
+|    5 | hello  |
++------+--------+
+3 rows in set (0.00 sec)
+
+mysql>
