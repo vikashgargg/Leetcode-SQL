@@ -67,3 +67,78 @@ having total_score > 0
 /* finally order as required */
 order by total_score desc, h.hacker_id
 ;
+
+
+create table challenges(challenge_id integer, hacker_id integer);
+
+insert into challenges values(61654, 5077);
+insert into challenges values(58302, 21283);
+insert into challenges values(40587, 88255);
+insert into challenges values(29477, 5077);
+insert into challenges values(1220, 21283);
+insert into challenges values(69514, 21283);
+insert into challenges values(46561, 62743);
+insert into challenges values(58077, 62743);
+insert into challenges values(18483, 88255);
+insert into challenges values(76766, 21283);
+insert into challenges values(52382, 5077);
+insert into challenges values(74467, 21283);
+insert into challenges values(33625, 96196);
+insert into challenges values(26053, 88255);
+insert into challenges values(42665, 62743);
+insert into challenges values(12859, 62743);
+insert into challenges values(70094, 21283);
+insert into challenges values(34599, 88255);
+insert into challenges values(54680, 88255);
+insert into challenges values(61881, 5077);
+
+create table hackers(hacker_id integer, name varchar(50));
+INSERT INTO `hackers` (`hacker_id`,`name`) VALUES (5077,'Rose');
+INSERT INTO `hackers` (`hacker_id`,`name`) VALUES (21283,'Angela');
+INSERT INTO `hackers` (`hacker_id`,`name`) VALUES (62743,'Frank');
+INSERT INTO `hackers` (`hacker_id`,`name`) VALUES (88255,'Patrick');
+INSERT INTO `hackers` (`hacker_id`,`name`) VALUES (96196,'Lisa');
+
+
+/* count total submissions of challenges of each user */
+WITH data AS
+(
+SELECT c.hacker_id as id, h.name as name, count(c.hacker_id) as counter
+FROM Hackers h
+JOIN Challenges c on c.hacker_id = h.hacker_id
+GROUP BY c.hacker_id, h.name
+)
+/* select records from above */
+SELECT id,name,counter
+FROM data
+WHERE
+counter=(SELECT max(counter) FROM data) /*select user that has max count submission*/
+OR
+counter in (SELECT counter FROM data
+GROUP BY counter
+HAVING count(counter)=1 ) /*filter out the submission count which is unique*/
+ORDER BY counter desc, id
+
+
+
+SELECT C.HACKER_ID, H.NAME, COUNT(C.HACKER_ID) AS CREATED
+FROM HACKERS AS H
+JOIN CHALLENGES AS C
+ON H.HACKER_ID = C.HACKER_ID
+
+/* This one line created the difference */
+GROUP BY C.HACKER_ID, H.NAME
+/* As soon as I included H.NAME in the group by statement, everything started running properly */
+
+HAVING CREATED = (SELECT COUNT(C1.CHALLENGE_ID) AS CREATED1
+                  FROM CHALLENGES AS C1
+                  GROUP BY C1.HACKER_ID
+                  ORDER BY CREATED1 DESC
+                  LIMIT 1)
+OR
+       CREATED NOT IN (SELECT COUNT(C2.CHALLENGE_ID)
+                       FROM CHALLENGES AS C2
+                       GROUP BY C2.HACKER_ID
+                       HAVING C.HACKER_ID != C2.HACKER_ID)
+
+ORDER BY CREATED DESC, C.HACKER_ID
