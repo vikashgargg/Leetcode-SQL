@@ -18,3 +18,13 @@ with cte as
     where timestamp >= '2022-01-01' and timestamp < '2023-01-01'
     group by app_id)
 select app_id, round(100.0 * no_of_clicks / no_of_impressions,2) as ctr from cte;
+
+
+https://datalemur.com/questions/second-day-confirmation:
+
+SELECT DISTINCT user_id
+FROM emails 
+INNER JOIN texts
+  ON emails.email_id = texts.email_id
+WHERE texts.action_date = emails.signup_date + INTERVAL '1 day'
+  AND texts.signup_action = 'Confirmed';
