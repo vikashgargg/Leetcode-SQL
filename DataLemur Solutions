@@ -28,3 +28,22 @@ INNER JOIN texts
   ON emails.email_id = texts.email_id
 WHERE texts.action_date = emails.signup_date + INTERVAL '1 day'
   AND texts.signup_action = 'Confirmed';
+
+
+
+
+https://datalemur.com/questions/time-spent-snaps
+
+with cte as 
+(select ag.age_bucket,
+  sum(case when ac.activity_type = 'open' then ac.time_spent else 0 end) as s_open,
+  sum(case when ac.activity_type = 'send' then ac.time_spent else 0 end) as s_send,
+  sum(ac.time_spent) AS total_timespent
+from activities ac inner join
+age_breakdown ag on ac.user_id = ag.user_id
+where ac.activity_type in ('open','send')
+group by ag.age_bucket)
+select age_bucket,
+round(100.0*s_send/total_timespent,2) as send_perc,
+round(100.0*s_open/total_timespent,2) as open_perc
+from cte
