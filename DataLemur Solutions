@@ -59,3 +59,23 @@ SELECT
     ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)
   ,2) AS rolling_avg_3d
 FROM tweets;
+
+
+
+https://datalemur.com/questions/sql-highest-grossing
+with cte as
+(
+select category,product,sum(spend) as total_spend
+from product_spend 
+        where transaction_date >= '2022-01-01' 
+        and transaction_date <= '2022-12-31' 
+        group by category,product
+),
+cte2 as 
+(
+select *,rank() over(partition by category order by total_spend desc) as rn
+from cte
+)
+select category,product,total_spend 
+from cte2 where rn <= 2 
+order by category, rn;
