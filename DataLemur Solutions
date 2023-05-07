@@ -79,3 +79,23 @@ from cte
 select category,product,total_spend 
 from cte2 where rn <= 2 
 order by category, rn;
+
+
+https://datalemur.com/questions/top-fans-rank
+
+with cte as 
+(
+select a.artist_id, a.artist_name, s.song_id,s.artist_id,
+gs.song_id,gs.rank
+from artists a 
+inner join songs s on a.artist_id = s.artist_id
+inner join global_song_rank gs on s.song_id = gs.song_id
+),
+cte2 as 
+(
+select artist_name,count(rank)  as cnt from cte where rank <=10
+group by artist_name
+),
+cte3 as 
+(select artist_name,dense_rank() over(order by cnt desc)  as artist_rank from cte2)
+select * from cte3 where artist_rank <=5
